@@ -1,0 +1,173 @@
+####################################################################################################
+############################ BACHELOR THESIS - Kristoffer Klose Madsen #############################                              ##
+####################################################################################################
+
+# Set Working Directory
+setwd("/Users/kloseone/Desktop/R - Bachelor/Bachelor")
+
+# Clear the environment: Type ctrl+L for clearing the console 
+rm(list = ls())                                            # Clears the environment
+cat("\014")                                                # Clears the terminal
+
+## Install and use packages
+install.packages("tseries")
+install.packages("zoo")
+install.packages("FinTS")
+install.packages("e1071")
+install.packages("xts")
+install.packages("TTR")
+install.packages("gt")
+install.packages("moments")
+install.packages("forecast")
+install.packages("vars")
+
+
+library(TTR)       # Technical Trading Rules
+library(xts)       # eXtensible Time Series
+library(tseries)   # Time series analysis and modeling
+library(zoo)       # Manipulation and analysis of regular and irregular time series data
+library(FinTS)     # Financial time series analysis
+library(e1071)     # Statistical modeling
+library(quantmod)  # Access financial data
+library(rugarch)   # Univariate GARCH model
+library(urca)      # Phillips-Perron unit root test
+library(knitr)     # Dynamic report generation in R
+library(gt)        # Grammar of Tables for creating beautiful tables
+library(moments)   # Computation of higher-order moments
+library(forecast)  # Forecasting functions
+library(vars)      # VAR models
+
+
+# Time-series date of interest
+startDate = as.Date("1988-03-01") 
+endDate = as.Date("2024-03-15")
+
+###############################################
+### Download and prepare the financial data ###
+###############################################
+
+# Importing historical data for the S&P500
+sp500 <- getSymbols("^GSPC", from = startDate, to = endDate, auto.assign = FALSE)
+anyNA(sp500)  # Any missing data? No, we can continue
+
+## Importing historical data for the German DAX ##
+dax <- getSymbols("^GDAXI", from = startDate, to = endDate, auto.assign = FALSE)
+anyNA(dax)  # Any missing data? Yes, remove
+dax30 <- na.omit(dax)
+anyNA(dax30) # Still something missing? NO! proceed.
+
+## Importing historical data for the French CAC40 ##
+cac <- getSymbols("^FCHI", from = startDate, to = endDate, auto.assign = FALSE)
+anyNA(cac) # Any missing data? Yes, remove
+cac40 <- na.omit(cac)
+anyNA(cac40) # Still something missing? NO! proceed.
+
+## Importing historical data for the French CAC40 ##
+nik <- getSymbols("^N225", from = startDate, to = endDate, auto.assign = FALSE)
+anyNA(nik) # Any missing data? Yes, remove
+n225 <- na.omit(nik)
+anyNA(n225) # Still something missing? NO! proceed.
+
+######################################################
+### Data Processing - Daily Adjusted Closing Price ###
+######################################################
+
+# SP500
+adj.sp500 <- sp500$GSPC.Adjusted
+
+# DAX30
+adj.dax30 <- dax30$GDAXI.Adjusted
+
+# CAC40
+adj.cac40 <- cac40$FCHI.Adjusted
+
+# N225
+adj.n225 <- n225$N225.Adjusted
+
+
+############################################################
+### Data Processing - Daily Adjusted Closing Price Plots ###
+############################################################
+
+# SP500
+plot(index(sp500), adj.sp500, type = "l", col = "black",
+     xlab = "Date", ylab = "Adjusted Closing Prices",
+     main = "S&P500")
+
+grid(lty = 3, col = "grey")        # Add a grid for better readability
+acf(adj.sp500, main = "SP500")     # ACF 
+pacf(adj.sp500, main = "SP500")    # PACF
+
+# DAX30
+plot(index(dax30), adj.dax30, type = "l", col = "black",
+     xlab = "Date", ylab = "Adjusted Closing Prices",
+     main = "DAX30")
+
+grid(lty = 3, col = "grey")        # Add a grid for better readability
+acf(adj.dax30, main = "DAX30")
+pacf(adj.dax30, main = "DAX30")
+
+
+# CAC40
+plot(index(cac40), adj.cac40, type = "l", col = "black",
+     xlab = "Date", ylab = "Adjusted Closing Prices",
+     main = "CAC40")
+
+grid(lty = 3, col = "grey")       # Add a grid for better readability
+acf(adj.cac40, main = "CAC40")    # ACF
+pacf(adj.cac40, main = "CAC40")   # PACF
+
+# N225
+plot(index(n225), adj.n225, type = "l", col = "black",
+     xlab = "Date", ylab = "Adjusted Closing Prices",
+     main = "N225")
+
+grid(lty = 3, col = "grey")        # Add a grid for better readability
+acf(adj.n225, main = "N225")       # ACF
+pacf(adj.n225, main = "N225")      # PACF
+
+##########################################################################
+### Data Processing - Daily Adjusted Closing Price - Stationarity Test ###
+##########################################################################
+
+# SP500
+adf.test(adj.sp500, alternative = "stationary")
+pp.test(adj.sp500, alternative = "stationary")
+kpss.test(adj.sp500, null = "Trend")
+
+# DAX30
+adf.test(adj.dax30, alternative = "stationary")
+pp.test(adj.dax30, alternative = "stationary")
+kpss.test(adj.dax30, null = "Trend")
+
+# CAC40
+adf.test(adj.cac40, alternative = "stationary")
+pp.test(adj.cac40, alternative = "stationary")
+kpss.test(adj.cac40, null = "Trend")
+
+# N225
+adf.test(adj.n225, alternative = "stationary")
+pp.test(adj.n225, alternative = "stationary")
+kpss.test(adj.n225, null = "Trend")
+
+###########################################
+### Data Processing - Daily Log Returns ###
+###########################################
+
+# SP500
+vX_sp = as.numeric(diff(log(na.omit(sp500[, 6])))[-1] *100)
+
+# DAX30
+vX_dax = as.numeric(diff(log(na.omit(dax30[, 6])))[-1] *100)
+
+# CAC40
+vX_cac = as.numeric(diff(log(na.omit(cac40[, 6])))[-1] *100)
+
+# N225
+vX_n225 = as.numeric(diff(log(na.omit(n225[, 6])))[-1] *100)
+
+# Extract dates from the data sets (they vary slightly on different market openings)
+dates_sp <- index(sp500)
+dates_dax <- index(dax30)
+dates_cac <- index(cac40)
+dates_n225 <- index(n225)
