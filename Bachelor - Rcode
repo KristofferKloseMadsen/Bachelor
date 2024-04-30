@@ -171,3 +171,1831 @@ dates_sp <- index(sp500)
 dates_dax <- index(dax30)
 dates_cac <- index(cac40)
 dates_n225 <- index(n225)
+
+###################################################
+### Data Processing - Daily Log Returns (Plots) ###
+###################################################
+
+# SP500
+plot(dates_sp[-1], vX_sp, type = "l", col = "black",
+     xlab = "Date", ylab = "Daily Returns",
+     main = "S&P500")
+
+abline(h = 0, lty = 2, col = "grey")    # Add a striped line through 0
+grid(lty = 3, col = "grey")             # Add a grid for better readability
+acf(vX_sp, main = "SP500")              # ACF
+pacf(vX_sp, main = "SP500")             # PACF
+
+# DAX30
+plot(dates_dax[-1], vX_dax, type = "l", col = "black",
+     xlab = "Date", ylab = "Daily Returns",
+     main = "DAX30")
+
+abline(h = 0, lty = 2, col = "grey")     # Add a striped line through 0
+grid(lty = 3, col = "grey")              # Add a grid for better readability
+acf(vX_dax, main = "DAX30")              # ACF
+pacf(vX_dax, main = "DAX30")             # PACF
+
+# CAC40
+plot(dates_cac[-1], vX_cac, type = "l", col = "black",
+     xlab = "Date", ylab = "Daily Returns",
+     main = "CAC40")
+
+abline(h = 0, lty = 2, col = "grey")     # Add a striped line through 0
+grid(lty = 3, col = "grey")              # Add a grid for better readability
+acf(vX_dax, main = "CAC40")              # ACF
+pacf(vX_dax, main = "CAC40")             # PACF
+
+# N225
+plot(dates_n225[-1], vX_n225, type = "l", col = "black",
+     xlab = "Date", ylab = "Daily Returns",
+     main = "N225")
+
+abline(h = 0, lty = 2, col = "grey")     # Add a striped line through 0
+grid(lty = 3, col = "grey")              # Add a grid for better readability
+acf(vX_dax, main = "N225")               # ACF
+pacf(vX_dax, main = "N225")              # PACF
+
+#################################################
+### Data Processing - Squared returns (Plots) ###
+#################################################
+
+# Calculate squared returns from the Vectors vX
+vX_sp_sq <- vX_sp^2
+vX_dax_sq <- vX_dax^2
+vX_cac_sq <- vX_cac^2
+vX_n225_sq <- vX_n225^2
+
+# SP500
+plot(dates_sp[-1], vX_sp_sq, type = "l", col = "black",
+     xlab = "Date", ylab = "Squared Daily Returns",
+     main = "S&P500")
+
+grid(lty = 3, col = "grey")                  # Add a grid for better readability
+acf(vX_sp_sq, main = "SP500")                # ACF
+pacf(vX_sp_sq, main = "SP500")               # PACF
+
+# DAX30
+plot(dates_dax[-1], vX_dax_sq, type = "l", col = "black",
+     xlab = "Date", ylab = "Squared Daily Returns",
+     main = "DAX30")
+
+grid(lty = 3, col = "grey")                   # Add a grid for better readability
+acf(vX_dax_sq, main = "DAX30")                # ACF
+pacf(vX_dax_sq, main = "DAX30")               # PACF
+
+# CAC40
+plot(dates_cac[-1], vX_cac_sq, type = "l", col = "black",
+     xlab = "Date", ylab = "Squared Daily Returns",
+     main = "CAC40")
+
+grid(lty = 3, col = "grey")                   # Add a grid for better readability
+acf(vX_cac_sq, main = "CAC40")                # ACF
+pacf(vX_cac_sq, main = "CAC40")               # PACF
+
+# N225
+plot(dates_n225[-1], vX_n225_sq, type = "l", col = "black",
+     xlab = "Date", ylab = "Squared Daily Returns",
+     main = "N225")
+
+grid(lty = 3, col = "grey")                   # Add a grid for better readability
+acf(vX_n225_sq, main = "N225")                # ACF
+pacf(vX_n225_sq, main = "N225")               # PACF
+
+# Squared returns seems persistent but decaying (ARCH/GARCH might be relevant)
+
+#########################################
+### Daily Returns - Stationarity Test ###
+#########################################
+
+# SP500
+adf.test(vX_sp, alternative = "stationary")
+pp.test(vX_sp, alternative = "stationary")
+kpss.test(vX_sp, null = "Trend")
+
+# DAX30
+adf.test(vX_dax, alternative = "stationary")
+pp.test(vX_dax, alternative = "stationary")
+kpss.test(vX_dax, null = "Trend")
+
+# CAC40
+adf.test(vX_cac, alternative = "stationary")
+pp.test(vX_cac, alternative = "stationary")
+kpss.test(vX_cac, null = "Trend")
+
+# N225
+adf.test(vX_n225, alternative = "stationary")
+pp.test(vX_n225, alternative = "stationary")
+kpss.test(vX_n225, null = "Trend")
+
+
+##################################################
+### Daily Log Returns - Descriptive Statistics ###
+##################################################
+
+# create the matrices where to store descriptive statistics
+DescStat_vX_sp = matrix(NA, 
+                        nrow = 1,
+                        ncol = 8,  
+                        dimnames = list(c("vX_sp"),
+                                        c("max", "min", "mean", "median", "variance", "standard deviation", "kurtosis", "skewness"))
+)
+
+DescStat_vX_dax = matrix(NA, 
+                         nrow = 1,
+                         ncol = 8,  
+                         dimnames = list(c("vX_dax"),
+                                         c("max", "min", "mean", "median", "variance", "standard deviation", "kurtosis", "skewness"))
+)
+
+DescStat_vX_cac = matrix(NA, 
+                         nrow = 1,
+                         ncol = 8,  
+                         dimnames = list(c("vX_cac"),
+                                         c("max", "min", "mean", "median", "variance", "standard deviation", "kurtosis", "skewness"))
+)
+
+DescStat_vX_n225 = matrix(NA, 
+                          nrow = 1,
+                          ncol = 8, 
+                          dimnames = list(c("vX_n225"),
+                                          c("max", "min", "mean", "median", "variance", "standard deviation", "kurtosis", "skewness"))
+)
+
+# SP500
+DescStat_vX_sp["vX_sp", "max"] = max(vX_sp)
+DescStat_vX_sp["vX_sp", "min"] = min(vX_sp)
+DescStat_vX_sp["vX_sp", "mean"] = mean(vX_sp)
+DescStat_vX_sp["vX_sp", "median"] = median(vX_sp)
+DescStat_vX_sp["vX_sp", "variance"] = var(vX_sp)
+DescStat_vX_sp["vX_sp", "standard deviation"] = sd(vX_sp)  
+DescStat_vX_sp["vX_sp", "skewness"] = skewness(vX_sp)
+DescStat_vX_sp["vX_sp", "kurtosis"] = kurtosis(vX_sp)
+
+# DAX30
+DescStat_vX_dax["vX_dax", "max"] = max(vX_dax)
+DescStat_vX_dax["vX_dax", "min"] = min(vX_dax)
+DescStat_vX_dax["vX_dax", "mean"] = mean(vX_dax)
+DescStat_vX_dax["vX_dax", "median"] = median(vX_dax)
+DescStat_vX_dax["vX_dax", "variance"] = var(vX_dax)
+DescStat_vX_dax["vX_dax", "standard deviation"] = sd(vX_dax)  
+DescStat_vX_dax["vX_dax", "skewness"] = skewness(vX_dax)
+DescStat_vX_dax["vX_dax", "kurtosis"] = kurtosis(vX_dax)
+
+# CAC40
+DescStat_vX_cac["vX_cac", "max"] = max(vX_cac)
+DescStat_vX_cac["vX_cac", "min"] = min(vX_cac)
+DescStat_vX_cac["vX_cac", "mean"] = mean(vX_cac)
+DescStat_vX_cac["vX_cac", "median"] = median(vX_cac)
+DescStat_vX_cac["vX_cac", "variance"] = var(vX_cac)
+DescStat_vX_cac["vX_cac", "standard deviation"] = sd(vX_cac)  
+DescStat_vX_cac["vX_cac", "skewness"] = skewness(vX_cac)
+DescStat_vX_cac["vX_cac", "kurtosis"] = kurtosis(vX_cac)
+
+# N225
+DescStat_vX_n225["vX_n225", "max"] = max(vX_n225)
+DescStat_vX_n225["vX_n225", "min"] = min(vX_n225)
+DescStat_vX_n225["vX_n225", "mean"] = mean(vX_n225)
+DescStat_vX_n225["vX_n225", "median"] = median(vX_n225)
+DescStat_vX_n225["vX_n225", "variance"] = var(vX_n225)
+DescStat_vX_n225["vX_n225", "standard deviation"] = sd(vX_n225)  
+DescStat_vX_n225["vX_n225", "skewness"] = skewness(vX_n225)
+DescStat_vX_n225["vX_n225", "kurtosis"] = kurtosis(vX_n225)
+
+# Print
+print(DescStat_vX_sp)
+print(DescStat_vX_dax)
+print(DescStat_vX_cac)
+print(DescStat_vX_n225)
+
+###############################
+# Distributional Visual Check #
+###############################
+
+# SP500
+hist(vX_sp, 
+     breaks = 100,                       # number of bins
+     col = "grey",                       # color of bars
+     border = "black",                   # color of border
+     main = "S&P500",                    # title
+     xlab = "Quantiles",           # x-axis label
+     ylab = "Density",                   # y-axis label
+     xlim = c(-10, 10),                  # limit x-axis to show tails
+     ylim = c(0, 0.7),                   # adjust y-axis to provide space for the curve
+     freq = FALSE,                       # specify density instead of frequency
+     lwd = 0.7                           # width of border lines
+)
+grid(lty = 3, col = "grey")              # Add a grid for better readability
+
+x_sp <- seq(min(vX_sp), max(vX_sp), length.out = length(vX_sp))                 # Sequence for normal dist with length of vector for SP500 data
+lines(x_sp, dnorm(x_sp, mean = , sd = sd(vX_sp)), col = "black", lwd = 2)       # Normal density function with the sample data
+lines(density(vX_sp)$x, density(vX_sp)$y, col = "black", lwd = 2, lty = 2)      # Empirical density
+
+legend("topright", legend = c("Normal Distribution", "Empirical Distribution"),
+       col = c("black", "black"), lwd = 2, lty = c(1, 2), inset = c(0, 0.01),
+       text.font = 1)                                                           # Legend in upper right corner
+
+# DAX30
+hist(vX_dax, 
+     breaks = 100,                       # number of bins
+     col = "grey",                       # color of bars
+     border = "black",                   # color of border
+     main = "DAX30",                    # title
+     xlab = "Quantiles",           # x-axis label
+     ylab = "Density",                   # y-axis label
+     xlim = c(-10, 10),                  # limit x-axis to show tails
+     ylim = c(0, 0.7),                   # adjust y-axis to provide space for the curve
+     freq = FALSE,                       # specify density instead of frequency
+     lwd = 0.7                           # width of border lines
+)
+grid(lty = 3, col = "grey")              # Add a grid for better readability
+
+x_dax <- seq(min(vX_dax), max(vX_dax), length.out = length(vX_dax))                  # Sequence for normal dist with length of vector for SP500 data
+lines(x_dax, dnorm(x_dax, mean = , sd = sd(vX_dax)), col = "black", lwd = 2) # Normal density function with the sample data
+lines(density(vX_dax)$x, density(vX_dax)$y, col = "black", lwd = 2, lty = 2)         # Empirical density
+
+legend("topright", legend = c("Normal Distribution", "Empirical Distribution"),
+       col = c("black", "black"), lwd = 2, lty = c(1, 2), inset = c(0, 0.01),
+       text.font = 1)                                                                # Legend in upper right corner
+
+# CAC40
+hist(vX_cac, 
+     breaks = 100,                       # number of bins
+     col = "grey",                       # color of bars
+     border = "black",                   # color of border
+     main = "CAC40",                    # title
+     xlab = "Quantiles",           # x-axis label
+     ylab = "Density",                   # y-axis label
+     xlim = c(-10, 10),                  # limit x-axis to show tails
+     ylim = c(0, 0.7),                   # adjust y-axis to provide space for the curve
+     freq = FALSE,                       # specify density instead of frequency
+     lwd = 0.7                           # width of border lines
+)
+grid(lty = 3, col = "grey")              # Add a grid for better readability
+
+x_cac <- seq(min(vX_cac), max(vX_cac), length.out = length(vX_cac))                  # Sequence for normal dist with length of vector for SP500 data
+lines(x_cac, dnorm(x_cac, mean = , sd = sd(vX_cac)), col = "black", lwd = 2) # Normal density function with the sample data
+lines(density(vX_cac)$x, density(vX_cac)$y, col = "black", lwd = 2, lty = 2)         # Empirical density
+
+legend("topright", legend = c("Normal Distribution", "Empirical Distribution"),
+       col = c("black", "black"), lwd = 2, lty = c(1, 2), inset = c(0, 0.01),
+       text.font = 1)        
+
+# N225
+hist(vX_n225, 
+     breaks = 100,                       # number of bins
+     col = "grey",                       # color of bars
+     border = "black",                   # color of border
+     main = "N225",                    # title
+     xlab = "Quantiles",           # x-axis label
+     ylab = "Density",                   # y-axis label
+     xlim = c(-10, 10),                  # limit x-axis to show tails
+     ylim = c(0, 0.7),                   # adjust y-axis to provide space for the curve
+     freq = FALSE,                       # specify density instead of frequency
+     lwd = 0.7                           # width of border lines
+)
+grid(lty = 3, col = "grey")              # Add a grid for better readability
+
+x_n225 <- seq(min(vX_n225), max(vX_n225), length.out = length(vX_n225))                  # Sequence for normal dist with length of vector for SP500 data
+lines(x_n225, dnorm(x_n225, mean = , sd = sd(vX_n225)), col = "black", lwd = 2) # Normal density function with the sample data
+lines(density(vX_n225)$x, density(vX_n225)$y, col = "black", lwd = 2, lty = 2)         # Empirical density
+
+legend("topright", legend = c("Normal Distribution", "Empirical Distribution"),
+       col = c("black", "black"), lwd = 2, lty = c(1, 2), inset = c(0, 0.01),
+       text.font = 1)        
+
+#########################
+### ARCH EFFECTS TEST ###
+#########################
+
+# Can follow Lecture 4 - Slide 26/63 in Financial Econometrics or use the ArchTest command 
+
+# Automatic ARCH test using the ArchTest function 
+sp_arch_results <- ArchTest(vX_sp)
+dax_arch_results <- ArchTest(vX_dax)
+cac_arch_results <- ArchTest(vX_cac)
+n225_arch_results <- ArchTest(vX_n225)
+
+# Print the results
+print(sp_arch_results)
+print(dax_arch_results)
+print(cac_arch_results)
+print(n225_arch_results)
+
+# Evaluation: Reject H0: NO ARCH EFFECTS (for H1: We encounter ARCH effects)
+# Running the LM-test statistic gives really close the same results
+
+#############################################
+### ARCH(q) - Model Selection (Normality) ###
+#############################################
+
+# Specify the lag orders to compare
+lag_orders <- c(1:5)
+
+# Initialize empty vectors to store AIC/BIC values
+
+# SP500
+sp_arch_AIC_values_norm <- numeric(length(lag_orders))
+sp_arch_BIC_values_norm <- numeric(length(lag_orders))
+
+# DAX30
+dax_arch_AIC_values_norm <- numeric(length(lag_orders))
+dax_arch_BIC_values_norm <- numeric(length(lag_orders))
+
+# CAC40
+cac_arch_AIC_values_norm <- numeric(length(lag_orders))
+cac_arch_BIC_values_norm <- numeric(length(lag_orders))
+
+# N225
+n225_arch_AIC_values_norm <- numeric(length(lag_orders))
+n225_arch_BIC_values_norm <- numeric(length(lag_orders))
+
+# Fit and compare each model
+for (lag_order in lag_orders) {
+  # Specify the model ARCH(q)
+  
+  # SP500
+  sp_arch_spec_norm <- ugarchspec(variance.model = list(garchOrder = c(lag_order, 0)),
+                                  mean.model = list(armaOrder = c(0, 0)),
+                                  distribution.model = "norm")
+  
+  # DAX30
+  dax_arch_spec_norm <- ugarchspec(variance.model = list(garchOrder = c(lag_order, 0)),
+                                   mean.model = list(armaOrder = c(0, 0)),
+                                   distribution.model = "norm")
+  
+  # CAC40
+  cac_arch_spec_norm <- ugarchspec(variance.model = list(garchOrder = c(lag_order, 0)),
+                                   mean.model = list(armaOrder = c(0, 0)),
+                                   distribution.model = "norm")
+  
+  # N225
+  n225_arch_spec_norm <- ugarchspec(variance.model = list(garchOrder = c(lag_order, 0)),
+                                    mean.model = list(armaOrder = c(0, 0)),
+                                    distribution.model = "norm")
+  
+  # Fit ARCH Models
+  
+  # SP500
+  sp_arch_fit_norm <- ugarchfit(data = vX_sp, spec = sp_arch_spec_norm)
+  
+  # DAX30
+  dax_arch_fit_norm <- ugarchfit(data = vX_dax, spec = dax_arch_spec_norm)
+  
+  # CAC40
+  cac_arch_fit_norm <- ugarchfit(data = vX_cac, spec = cac_arch_spec_norm)
+  
+  # N225
+  n225_arch_fit_norm <- ugarchfit(data = vX_n225, spec = cac_arch_spec_norm)
+  
+  # Extract AIC and BIC values
+  
+  # SP500
+  criteria <- infocriteria(sp_arch_fit_norm)
+  sp_arch_AIC_values_norm[lag_order] <- criteria[1]
+  sp_arch_BIC_values_norm[lag_order] <- criteria[2]
+  
+  # DAX30
+  criteria <- infocriteria(dax_arch_fit_norm)
+  dax_arch_AIC_values_norm[lag_order] <- criteria[1]
+  dax_arch_BIC_values_norm[lag_order] <- criteria[2]
+  
+  # CAC40
+  criteria <- infocriteria(cac_arch_fit_norm)
+  cac_arch_AIC_values_norm[lag_order] <- criteria[1]
+  cac_arch_BIC_values_norm[lag_order] <- criteria[2]
+  
+  # N225
+  criteria <- infocriteria(n225_arch_fit_norm)
+  n225_arch_AIC_values_norm[lag_order] <- criteria[1]
+  n225_arch_BIC_values_norm[lag_order] <- criteria[2]
+}
+
+# Find the lag order with the lowest achieved IC!
+
+# SP500
+best_sp_lag_arch_AIC_norm <- lag_orders[which.min(sp_arch_AIC_values_norm)]
+best_sp_lag_arch_BIC_norm <- lag_orders[which.min(sp_arch_BIC_values_norm)]
+
+# DAX30
+best_dax_lag_arch_AIC_norm <- lag_orders[which.min(dax_arch_AIC_values_norm)]
+best_dax_lag_arch_BIC_norm <- lag_orders[which.min(dax_arch_BIC_values_norm)]
+
+# CAC40
+best_cac_lag_arch_AIC_norm <- lag_orders[which.min(cac_arch_AIC_values_norm)]
+best_cac_lag_arch_BIC_norm <- lag_orders[which.min(cac_arch_BIC_values_norm)]
+
+# N225
+best_n225_lag_arch_AIC_norm <- lag_orders[which.min(n225_arch_AIC_values_norm)]
+best_n225_lag_arch_BIC_norm <- lag_orders[which.min(n225_arch_BIC_values_norm)]
+
+
+print(paste("Best lag order based on AIC with normal distribution:", best_sp_lag_arch_AIC_norm, best_dax_lag_arch_AIC_norm, best_cac_lag_arch_AIC_norm, best_n225_lag_arch_AIC_norm))
+print(paste("Best lag order based on BIC with normal distribution:", best_sp_lag_arch_BIC_norm, best_dax_lag_arch_BIC_norm, best_cac_lag_arch_BIC_norm, best_n225_lag_arch_BIC_norm))
+
+# AIC & BIC both select 5-lag orders for all the indexes
+
+# Further investigations
+print(sp_arch_AIC_values_norm)
+print(dax_arch_AIC_values_norm)
+print(cac_arch_AIC_values_norm)
+print(n225_arch_AIC_values_norm)
+
+print(sp_arch_BIC_values_norm)
+print(dax_arch_BIC_values_norm)
+print(cac_arch_BIC_values_norm)
+print(n225_arch_BIC_values_norm)
+
+
+################################################
+### GARCH(p,q) - Model Selection (Normality) ###
+################################################
+
+# Specify the lag orders to compare
+p_values <- 1:5
+q_values <- 1:5
+
+# Initialize empty matrices to store AIC/BIC values
+
+# SP500
+sp_garch_AIC_values_norm <-  matrix(NA, nrow = length(p_values), ncol = length(q_values))
+sp_garch_BIC_values_norm <- matrix(NA, nrow = length(p_values), ncol = length(q_values))
+
+# DAX30
+dax_garch_AIC_values_norm <-  matrix(NA, nrow = length(p_values), ncol = length(q_values))
+dax_garch_BIC_values_norm <- matrix(NA, nrow = length(p_values), ncol = length(q_values))
+
+# CAC
+cac_garch_AIC_values_norm <-  matrix(NA, nrow = length(p_values), ncol = length(q_values))
+cac_garch_BIC_values_norm <- matrix(NA, nrow = length(p_values), ncol = length(q_values))
+
+# N225
+n225_garch_AIC_values_norm <-  matrix(NA, nrow = length(p_values), ncol = length(q_values))
+n225_garch_BIC_values_norm <- matrix(NA, nrow = length(p_values), ncol = length(q_values))
+
+
+# Fit and compare each model
+for (i in 1:length(p_values)) {
+  for (j in 1:length(q_values)) {
+    # Specify the GARCH(p,q) model
+    
+    # SP500
+    sp_garch_spec_norm <- ugarchspec(variance.model = list(garchOrder = c(p_values[i], q_values[j])),
+                                     mean.model = list(armaOrder = c(0, 0)),
+                                     distribution.model = "norm")
+    
+    # DAX30
+    dax_garch_spec_norm <- ugarchspec(variance.model = list(garchOrder = c(p_values[i], q_values[j])),
+                                      mean.model = list(armaOrder = c(0, 0)),
+                                      distribution.model = "norm")
+    
+    # CAC40
+    cac_garch_spec_norm <- ugarchspec(variance.model = list(garchOrder = c(p_values[i], q_values[j])),
+                                      mean.model = list(armaOrder = c(0, 0)),
+                                      distribution.model = "norm")
+    
+    # N225
+    n225_garch_spec_norm <- ugarchspec(variance.model = list(garchOrder = c(p_values[i], q_values[j])),
+                                       mean.model = list(armaOrder = c(0, 0)),
+                                       distribution.model = "norm")
+    
+    # Fit GARCH Models
+    
+    # SP500
+    sp_garch_fit_norm <- ugarchfit(data = vX_sp, spec = sp_garch_spec_norm)
+    
+    # DAX30
+    dax_garch_fit_norm <- ugarchfit(data = vX_dax, spec = dax_garch_spec_norm)
+    
+    # CAC40
+    cac_garch_fit_norm <- ugarchfit(data = vX_cac, spec = cac_garch_spec_norm)
+    
+    # N225
+    n225_garch_fit_norm <- ugarchfit(data = vX_n225, spec = n225_garch_spec_norm)
+    
+    # Extract AIC and BIC values
+    
+    # SP500
+    criteria <- infocriteria(sp_garch_fit_norm)
+    sp_garch_AIC_values_norm[i, j] <- criteria[1]
+    sp_garch_BIC_values_norm[i, j] <- criteria[2]
+    
+    # DAX30
+    criteria <- infocriteria(dax_garch_fit_norm)
+    dax_garch_AIC_values_norm[i, j] <- criteria[1]
+    dax_garch_BIC_values_norm[i, j] <- criteria[2]
+    
+    # CAC40
+    criteria <- infocriteria(cac_garch_fit_norm)
+    cac_garch_AIC_values_norm[i, j] <- criteria[1]
+    cac_garch_BIC_values_norm[i, j] <- criteria[2]
+    
+    # N225
+    criteria <- infocriteria(n225_garch_fit_norm)
+    n225_garch_AIC_values_norm[i, j] <- criteria[1]
+    n225_garch_BIC_values_norm[i, j] <- criteria[2]
+    
+    # Print AIC and BIC values
+    cat("AIC for GARCH(", p_values[i], ",", q_values[j], "): ", criteria[1], "\n")
+    cat("BIC for GARCH(", p_values[i], ",", q_values[j], "): ", criteria[2], "\n\n")
+  }
+}
+
+# Find the lag orders with the lowest AIC and BIC
+
+# SP500
+best_sp_lags_garch_AIC_norm <- which(sp_garch_AIC_values_norm == min(sp_garch_AIC_values_norm), arr.ind = TRUE)
+best_sp_lags_garch_BIC_norm <- which(sp_garch_BIC_values_norm == min(sp_garch_BIC_values_norm), arr.ind = TRUE)
+
+print(best_sp_lags_garch_AIC_norm)
+print(best_sp_lags_garch_BIC_norm)
+
+# DAX30
+best_dax_lags_garch_AIC_norm <- which(dax_garch_AIC_values_norm == min(dax_garch_AIC_values_norm), arr.ind = TRUE)
+best_dax_lags_garch_BIC_norm <- which(dax_garch_BIC_values_norm == min(dax_garch_BIC_values_norm), arr.ind = TRUE)
+
+print(best_dax_lags_garch_AIC_norm)
+print(best_dax_lags_garch_BIC_norm)
+
+# CAC40
+best_cac_lags_garch_AIC_norm <- which(cac_garch_AIC_values_norm == min(cac_garch_AIC_values_norm), arr.ind = TRUE)
+best_cac_lags_garch_BIC_norm <- which(cac_garch_BIC_values_norm == min(cac_garch_BIC_values_norm), arr.ind = TRUE)
+
+print(best_cac_lags_garch_AIC_norm)
+print(best_cac_lags_garch_BIC_norm)
+
+# N225
+best_n225_lags_garch_AIC_norm <- which(n225_garch_AIC_values_norm == min(n225_garch_AIC_values_norm), arr.ind = TRUE)
+best_n225_lags_garch_BIC_norm <- which(n225_garch_BIC_values_norm == min(n225_garch_BIC_values_norm), arr.ind = TRUE)
+
+print(best_n225_lags_garch_AIC_norm)
+print(best_n225_lags_garch_BIC_norm)
+
+# Model-selection for GARCH under normality results:
+# SP500: GARCH(2,2)
+# DAX30: GARCH(3,1)
+# CAC40: GARCH(1,1)
+# N225: GARCH(1,1)
+
+# Further investigations
+print(sp_garch_AIC_values_norm)
+print(dax_garch_AIC_values_norm)
+print(cac_garch_AIC_values_norm)
+print(n225_garch_AIC_values_norm)
+
+print(sp_garch_BIC_values_norm)
+print(dax_garch_BIC_values_norm)
+print(cac_garch_BIC_values_norm)
+print(n225_garch_BIC_values_norm)
+
+# Overall lower AIC and BIC values, than ARCH = better fit
+
+#################################################
+### GARCH(p,q) - Model Estimation (Normality) ###
+#################################################
+
+# GARCH specifications
+
+# SP500
+sp_garch_spec_norm <- ugarchspec(variance.model = list(garchOrder = c(2, 2)),
+                                 mean.model = list(armaOrder = c(0, 0)),
+                                 distribution.model = "norm")
+
+# DAX30
+dax_garch_spec_norm <- ugarchspec(variance.model = list(garchOrder = c(3, 1)),
+                                  mean.model = list(armaOrder = c(0, 0)),
+                                  distribution.model = "norm")
+
+# CAC40
+cac_garch_spec_norm <- ugarchspec(variance.model = list(garchOrder = c(1, 1)),
+                                  mean.model = list(armaOrder = c(0, 0)),
+                                  distribution.model = "norm")
+
+# N225
+n225_garch_spec_norm <- ugarchspec(variance.model = list(garchOrder = c(1, 1)),
+                                   mean.model = list(armaOrder = c(0, 0)),
+                                   distribution.model = "norm")
+
+# Fit GARCH Model, I can now interpret the sGARCH coefficients
+
+# SP500
+sp_garch_fit_norm <- ugarchfit(data = vX_sp, spec = sp_garch_spec_norm)
+sp_garch_fit_norm
+
+# DAX30
+dax_garch_fit_norm <- ugarchfit(data = vX_dax, spec = dax_garch_spec_norm)
+dax_garch_fit_norm
+
+# CAC40
+cac_garch_fit_norm <- ugarchfit(data = vX_cac, spec = cac_garch_spec_norm)
+cac_garch_fit_norm
+
+# N225
+n225_garch_fit_norm <- ugarchfit(data = vX_n225, spec = n225_garch_spec_norm)
+n225_garch_fit_norm
+
+
+##################################################
+### GARCH(p,q) - Diagnostics check (Normality) ###
+##################################################
+
+# Extract the residuals for analysis
+sp_res_garch_norm  <- residuals(sp_garch_fit_norm)                              # SP500
+dax_res_garch_norm  <- residuals(dax_garch_fit_norm)                            # DAX30
+cac_res_garch_norm  <- residuals(cac_garch_fit_norm)                            # CAC40
+n225_res_garch_norm  <- residuals(n225_garch_fit_norm)                          # N225
+
+# Ljung-Box Portmenteau Test
+Box.test(sp_res_garch_norm, lag = 6, type = "Ljung-Box")                        # SP500
+Box.test(dax_res_garch_norm, lag = 6, type = "Ljung-Box")                       # DAX30
+Box.test(cac_res_garch_norm, lag = 6, type = "Ljung-Box")                       # CAC
+Box.test(n225_res_garch_norm, lag = 6, type = "Ljung-Box")                      # N225
+
+# All indexes show auto correlation in the residuals, suggestion for another model specification
+# Try to improve with t-distribution
+
+#####################################################
+### GARCH(p,q) - Model Selection (T-distribution) ###
+#####################################################
+
+# Specify the lag orders to compare
+p_values <- 1:5
+q_values <- 1:5
+
+# Initialize empty matrices to store AIC/BIC values
+
+# SP500
+sp_garch_AIC_values_t <-  matrix(NA, nrow = length(p_values), ncol = length(q_values))
+sp_garch_BIC_values_t <- matrix(NA, nrow = length(p_values), ncol = length(q_values))
+
+# DAX30
+dax_garch_AIC_values_t <-  matrix(NA, nrow = length(p_values), ncol = length(q_values))
+dax_garch_BIC_values_t <- matrix(NA, nrow = length(p_values), ncol = length(q_values))
+
+# CAC
+cac_garch_AIC_values_t <-  matrix(NA, nrow = length(p_values), ncol = length(q_values))
+cac_garch_BIC_values_t <- matrix(NA, nrow = length(p_values), ncol = length(q_values))
+
+# N225
+n225_garch_AIC_values_t <-  matrix(NA, nrow = length(p_values), ncol = length(q_values))
+n225_garch_BIC_values_t <- matrix(NA, nrow = length(p_values), ncol = length(q_values))
+
+
+# Fit and compare each model
+for (i in 1:length(p_values)) {
+  for (j in 1:length(q_values)) {
+    # Specify the GARCH(p,q) model
+    
+    # SP500
+    sp_garch_spec_t <- ugarchspec(variance.model = list(garchOrder = c(p_values[i], q_values[j])),
+                                  mean.model = list(armaOrder = c(0, 0)),
+                                  distribution.model = "std")
+    
+    # DAX30
+    dax_garch_spec_t <- ugarchspec(variance.model = list(garchOrder = c(p_values[i], q_values[j])),
+                                   mean.model = list(armaOrder = c(0, 0)),
+                                   distribution.model = "std")
+    
+    # CAC40
+    cac_garch_spec_t <- ugarchspec(variance.model = list(garchOrder = c(p_values[i], q_values[j])),
+                                   mean.model = list(armaOrder = c(0, 0)),
+                                   distribution.model = "std")
+    
+    # N225
+    n225_garch_spec_t <- ugarchspec(variance.model = list(garchOrder = c(p_values[i], q_values[j])),
+                                    mean.model = list(armaOrder = c(0, 0)),
+                                    distribution.model = "std")
+    
+    # Fit GARCH Models
+    
+    # SP500
+    sp_garch_fit_t <- ugarchfit(data = vX_sp, spec = sp_garch_spec_t)
+    
+    # DAX30
+    dax_garch_fit_t <- ugarchfit(data = vX_dax, spec = dax_garch_spec_t)
+    
+    # CAC40
+    cac_garch_fit_t <- ugarchfit(data = vX_cac, spec = cac_garch_spec_t)
+    
+    # N225
+    n225_garch_fit_t <- ugarchfit(data = vX_n225, spec = n225_garch_spec_t)
+    
+    # Extract AIC and BIC values
+    
+    # SP500
+    criteria <- infocriteria(sp_garch_fit_t)
+    sp_garch_AIC_values_t[i, j] <- criteria[1]
+    sp_garch_BIC_values_t[i, j] <- criteria[2]
+    
+    # DAX30
+    criteria <- infocriteria(dax_garch_fit_t)
+    dax_garch_AIC_values_t[i, j] <- criteria[1]
+    dax_garch_BIC_values_t[i, j] <- criteria[2]
+    
+    # CAC40
+    criteria <- infocriteria(cac_garch_fit_t)
+    cac_garch_AIC_values_t[i, j] <- criteria[1]
+    cac_garch_BIC_values_t[i, j] <- criteria[2]
+    
+    # N225
+    criteria <- infocriteria(n225_garch_fit_t)
+    n225_garch_AIC_values_t[i, j] <- criteria[1]
+    n225_garch_BIC_values_t[i, j] <- criteria[2]
+    
+    # Print AIC and BIC values
+    cat("AIC for GARCH(", p_values[i], ",", q_values[j], "): ", criteria[1], "\n")
+    cat("BIC for GARCH(", p_values[i], ",", q_values[j], "): ", criteria[2], "\n\n")
+  }
+}
+
+# Find the lag orders with the lowest AIC and BIC
+
+# SP500
+best_sp_lags_garch_AIC_t <- which(sp_garch_AIC_values_t == min(sp_garch_AIC_values_t), arr.ind = TRUE)
+best_sp_lags_garch_BIC_t <- which(sp_garch_BIC_values_t == min(sp_garch_BIC_values_t), arr.ind = TRUE)
+
+print(best_sp_lags_garch_AIC_t)
+print(best_sp_lags_garch_BIC_t)
+
+# DAX30
+best_dax_lags_garch_AIC_t <- which(dax_garch_AIC_values_t == min(dax_garch_AIC_values_t), arr.ind = TRUE)
+best_dax_lags_garch_BIC_t <- which(dax_garch_BIC_values_t == min(dax_garch_BIC_values_t), arr.ind = TRUE)
+
+print(best_dax_lags_garch_AIC_t)
+print(best_dax_lags_garch_BIC_t)
+
+# CAC40
+best_cac_lags_garch_AIC_t <- which(cac_garch_AIC_values_t == min(cac_garch_AIC_values_t), arr.ind = TRUE)
+best_cac_lags_garch_BIC_t <- which(cac_garch_BIC_values_t == min(cac_garch_BIC_values_t), arr.ind = TRUE)
+
+print(best_cac_lags_garch_AIC_t)
+print(best_cac_lags_garch_BIC_t)
+
+# N225
+best_n225_lags_garch_AIC_t <- which(n225_garch_AIC_values_t == min(n225_garch_AIC_values_t), arr.ind = TRUE)
+best_n225_lags_garch_BIC_t <- which(n225_garch_BIC_values_t == min(n225_garch_BIC_values_t), arr.ind = TRUE)
+
+print(best_n225_lags_garch_AIC_t)
+print(best_n225_lags_garch_BIC_t)
+
+# Model-selection for GARCH under t-distribution results:
+# SP500: GARCH(2,1)
+# DAX30: GARCH(2,1)
+# CAC40: GARCH(1,1)
+# N225: GARCH(1,1)
+
+# Further investigations
+print(sp_garch_AIC_values_t)
+print(dax_garch_AIC_values_t)
+print(cac_garch_AIC_values_t)
+print(n225_garch_AIC_values_t)
+
+print(sp_garch_BIC_values_t)
+print(dax_garch_BIC_values_t)
+print(cac_garch_BIC_values_t)
+print(n225_garch_BIC_values_t)
+
+# Overall lower AIC and BIC values, than under normality = better fit
+
+######################################################
+### GARCH(p,q) - Model Estimation (T-distribution) ###
+######################################################
+
+# GARCH specifications
+
+# SP500
+sp_garch_spec_t <- ugarchspec(variance.model = list(garchOrder = c(2, 1)),
+                              mean.model = list(armaOrder = c(0, 0)),
+                              distribution.model = "std")
+
+# DAX30
+dax_garch_spec_t <- ugarchspec(variance.model = list(garchOrder = c(2, 1)),
+                               mean.model = list(armaOrder = c(0, 0)),
+                               distribution.model = "std")
+
+# CAC40
+cac_garch_spec_t <- ugarchspec(variance.model = list(garchOrder = c(1, 1)),
+                               mean.model = list(armaOrder = c(0, 0)),
+                               distribution.model = "std")
+
+# N225
+n225_garch_spec_t <- ugarchspec(variance.model = list(garchOrder = c(1, 1)),
+                                mean.model = list(armaOrder = c(0, 0)),
+                                distribution.model = "std")
+
+# Fit GARCH Model, I can now interpret the sGARCH coefficients
+
+# SP500
+sp_garch_fit_t <- ugarchfit(data = vX_sp, spec = sp_garch_spec_t)
+sp_garch_fit_t
+
+# DAX30
+dax_garch_fit_t <- ugarchfit(data = vX_dax, spec = dax_garch_spec_t)
+dax_garch_fit_t
+
+# CAC40
+cac_garch_fit_t <- ugarchfit(data = vX_cac, spec = cac_garch_spec_t)
+cac_garch_fit_t
+
+# N225
+n225_garch_fit_t <- ugarchfit(data = vX_n225, spec = n225_garch_spec_t)
+n225_garch_fit_t
+
+plot(sp_garch_fit_t, which = 3, main = "SP500")
+plot(dax_garch_fit_t, which = 3, main = "SP500")
+plot(cac_garch_fit_t, which = 3, main = "SP500")
+plot(n225_garch_fit_t, which = 3, main = "SP500")
+
+#######################################################
+### GARCH(p,q) - Diagnostics check (T-distribution) ###
+#######################################################
+
+# Extract the residuals for analysis 
+sp_res_garch_t  <- residuals(sp_garch_fit_t, standardize = TRUE)                 # SP500
+dax_res_garch_t  <- residuals(dax_garch_fit_t, standardize = TRUE)               # DAX30
+cac_res_garch_t  <- residuals(cac_garch_fit_t, standardize = TRUE)               # CAC40
+n225_res_garch_t  <- residuals(n225_garch_fit_t, standardize = TRUE)             # N225
+
+# Ljung-Box Portmenteau Test
+Box.test(sp_res_garch_t, type = "Ljung-Box")                        # SP500
+Box.test(dax_res_garch_t, type = "Ljung-Box")                       # DAX30
+Box.test(cac_res_garch_t, type = "Ljung-Box")                       # CAC
+Box.test(n225_res_garch_t, type = "Ljung-Box")                      # N225
+
+# Square the residuals
+sp_res_garch_t_sq  <- sp_res_garch_t^2              # SP500
+dax_res_garch_t_sq  <- dax_res_garch_t^2              # DAX30
+cac_res_garch_t_sq  <- cac_res_garch_t^2              # CAC40
+n225_res_garch_t_sq  <- n225_res_garch_t^2           # N225
+
+# Ljung-Box Portmenteau Test
+Box.test(sp_res_garch_t_sq, lag = 10, type = "Ljung-Box")                        # SP500
+Box.test(dax_res_garch_t_sq, lag = 10, type = "Ljung-Box")                       # DAX30
+Box.test(cac_res_garch_t_sq, lag = 10, type = "Ljung-Box")                       # CAC
+Box.test(n225_res_garch_t_sq, lag = 10, type = "Ljung-Box")                      # N225
+
+# Squared returns captures volatility adequately
+
+######################
+# Jarque Bera - Test #
+######################
+
+# Jarque-Bera test statistic
+sp_garch_jarque_bera_test <- jarque.bera.test(sp_res_garch_t)                           # SP500
+dax_garch_jarque_bera_test <- jarque.bera.test(dax_res_garch_t)                           # DAX30
+cac_garch_jarque_bera_test <- jarque.bera.test(cac_res_garch_t)                           # CAC40
+n225_garch_jarque_bera_test <- jarque.bera.test(n225_res_garch_t)                           # N225
+
+# Result
+sp_garch_jarque_bera_test
+dax_garch_jarque_bera_test 
+cac_garch_jarque_bera_test 
+n225_garch_jarque_bera_test
+
+# We reject normality 
+
+# Plot Fitted Residuals to see if it exhibits white noise
+plot(dates_sp[-1], sp_res_garch_t, type = "l", col = "black",
+     xlab = "Date", ylab = "Fitted Residuals",
+     main = "SP500")
+
+
+# Plot Fitted Residuals to see if it exhibits white noise
+plot(dates_dax[-1], dax_res_garch_t, type = "l", col = "black",
+     xlab = "Date", ylab = "Fitted Residuals",
+     main = "DAX30")
+
+# Plot Fitted Residuals to see if it exhibits white noise
+plot(dates_cac[-1], cac_res_garch_t, type = "l", col = "black",
+     xlab = "Date", ylab = "Fitted Residuals",
+     main = "CAC40")
+
+# Plot Fitted Residuals to see if it exhibits white noise
+plot(dates_n225[-1], n225_res_garch_t, type = "l", col = "black",
+     xlab = "Date", ylab = "Fitted Residuals",
+     main = "N225")
+
+# Conditional variances (sigma extract the standard deviation)
+sp_cd_std <- sigma(sp_garch_fit_t)          # Conditional std. for SP500
+dax_cd_std <- sigma(dax_garch_fit_t)        # Conditional std. for DAX30
+cac_cd_std <- sigma(cac_garch_fit_t)        # Conditional std. for CAC40
+n225_cd_std <- sigma(n225_garch_fit_t)      # Conditional std. for N225
+
+sp_cd_var <- sigma(sp_garch_fit_t)^2          # Conditional variance for SP500
+dax_cd_var <- sigma(dax_garch_fit_t)^2        # Conditional variance for DAX30
+cac_cd_var <- sigma(cac_garch_fit_t)^2        # Conditional variance for CAC40
+n225_cd_var <- sigma(n225_garch_fit_t)^2      # Conditional variance for N225
+
+# Absolute returns
+absolute_returns_sp <- abs(vX_sp)
+absolute_returns_dax <- abs(vX_dax)
+absolute_returns_cac <- abs(vX_cac)
+absolute_returns_n225 <- abs(vX_n225)
+
+# Plot conditional variance against absolute returns with date
+
+# SP500
+ylim <- range(absolute_returns_sp, sp_cd_std)
+plot(dates_sp[-1], absolute_returns_sp, type = "l", col = "grey",
+     xlab = "Date", ylab = "Conditional Std.",
+     main = "SP500", ylim = ylim)
+
+lines(dates_sp[-1], sp_cd_std, col = "steelblue", type = "l")
+
+grid(lty = 3, col = "grey")              # Add a grid for better readability
+
+legend("topright", legend = c("Absolute Returns", "Conditional Std."),
+       col = c("grey", "steelblue"), lwd = 2, lty = c(1, 2), inset = c(0, 0.0001),
+       text.font = 1)        
+
+# SP500
+ylim <- range(absolute_returns_sp, sp_cd_std)
+plot(dates_sp[-1], absolute_returns_sp, type = "l", col = "grey",
+     xlab = "Date", ylab = "Conditional Std.",
+     main = "SP500", ylim = ylim)
+
+lines(dates_sp[-1], sp_cd_std, col = "steelblue", type = "l")
+
+grid(lty = 3, col = "grey")              # Add a grid for better readability
+
+legend("topright", legend = c("Absolute Returns", "Conditional Std."),
+       col = c("grey", "steelblue"), lwd = 2, lty = c(1, 2), inset = c(0, 0.0001),
+       text.font = 1)    
+
+# DAX30
+ylim <- range(absolute_returns_dax, dax_cd_std)
+plot(dates_dax[-1], absolute_returns_dax, type = "l", col = "grey",
+     xlab = "Date", ylab = "Conditional Std.",
+     main = "DAX30", ylim = ylim)
+
+lines(dates_dax[-1], dax_cd_std, col = "steelblue", type = "l")
+
+grid(lty = 3, col = "grey")              # Add a grid for better readability
+
+legend("topright", legend = c("Absolute Returns", "Conditional Std."),
+       col = c("grey", "steelblue"), lwd = 2, lty = c(1, 2), inset = c(0, 0.0001),
+       text.font = 1)        
+
+# CAC40
+ylim <- range(absolute_returns_cac, cac_cd_std)
+plot(dates_cac[-1], absolute_returns_cac, type = "l", col = "grey",
+     xlab = "Date", ylab = "Conditional Std.",
+     main = "CAC40", ylim = ylim)
+
+lines(dates_cac[-1], cac_cd_std, col = "steelblue", type = "l")
+
+grid(lty = 3, col = "grey")              # Add a grid for better readability
+
+legend("topright", legend = c("Absolute Returns", "Conditional Std."),
+       col = c("grey", "steelblue"), lwd = 2, lty = c(1, 2), inset = c(0, 0.0001),
+       text.font = 1)    
+
+# N225
+ylim <- range(absolute_returns_n225, n225_cd_std)
+plot(dates_n225[-1], absolute_returns_n225, type = "l", col = "grey",
+     xlab = "Date", ylab = "Conditional Std.",
+     main = "N225", ylim = ylim)
+
+lines(dates_n225[-1], n225_cd_std, col = "steelblue", type = "l")
+
+grid(lty = 3, col = "grey")              # Add a grid for better readability
+
+legend("topright", legend = c("Absolute Returns", "Conditional Std."),
+       col = c("grey", "steelblue"), lwd = 2, lty = c(1, 2), inset = c(0, 0.0001),
+       text.font = 1)    
+
+
+######################################################
+### EGARCH(p,q) - Model Selection (T-distribution) ###
+######################################################
+
+# Specify the lag orders to compare
+p_values <- 1:5
+q_values <- 1:5
+
+# Initialize empty matrices to store AIC/BIC values
+
+# SP500
+sp_egarch_AIC_values_t <-  matrix(NA, nrow = length(p_values), ncol = length(q_values))
+sp_egarch_BIC_values_t <- matrix(NA, nrow = length(p_values), ncol = length(q_values))
+
+# DAX30
+dax_egarch_AIC_values_t <-  matrix(NA, nrow = length(p_values), ncol = length(q_values))
+dax_egarch_BIC_values_t <- matrix(NA, nrow = length(p_values), ncol = length(q_values))
+
+# CAC
+cac_egarch_AIC_values_t <-  matrix(NA, nrow = length(p_values), ncol = length(q_values))
+cac_egarch_BIC_values_t <- matrix(NA, nrow = length(p_values), ncol = length(q_values))
+
+# N225
+n225_egarch_AIC_values_t <-  matrix(NA, nrow = length(p_values), ncol = length(q_values))
+n225_egarch_BIC_values_t <- matrix(NA, nrow = length(p_values), ncol = length(q_values))
+
+
+# Fit and compare each model
+for (i in 1:length(p_values)) {
+  for (j in 1:length(q_values)) {
+    # Specify the eGARCH(p,q) model
+    
+    # SP500
+    sp_egarch_spec_t <- ugarchspec(variance.model = list(model = "eGARCH", garchOrder = c(p_values[i], q_values[j])),
+                                   mean.model = list(armaOrder = c(0, 0)),
+                                   distribution.model = "std")
+    
+    # DAX30
+    dax_egarch_spec_t <- ugarchspec(variance.model = list(model = "eGARCH", garchOrder = c(p_values[i], q_values[j])),
+                                    mean.model = list(armaOrder = c(0, 0)),
+                                    distribution.model = "std")
+    
+    # CAC40
+    cac_egarch_spec_t <- ugarchspec(variance.model = list(model = "eGARCH", garchOrder = c(p_values[i], q_values[j])),
+                                    mean.model = list(armaOrder = c(0, 0)),
+                                    distribution.model = "std")
+    
+    # N225
+    n225_egarch_spec_t <- ugarchspec(variance.model = list(model = "eGARCH", garchOrder = c(p_values[i], q_values[j])),
+                                     mean.model = list(armaOrder = c(0, 0)),
+                                     distribution.model = "std")
+    
+    # Fit eGARCH Models
+    
+    # SP500
+    sp_egarch_fit_t <- ugarchfit(data = vX_sp, spec = sp_egarch_spec_t)
+    
+    # DAX30
+    dax_egarch_fit_t <- ugarchfit(spec = dax_egarch_spec_t, data = vX_dax, solver = c('hybrid'))
+    
+    # CAC40
+    cac_egarch_fit_t <- ugarchfit(cac_egarch_spec_t, data = vX_cac, solver = c('hybrid'))
+    
+    # N225
+    n225_egarch_fit_t <- ugarchfit(spec = n225_egarch_spec_t, data = vX_n225, solver = c('hybrid'))
+    
+    # Extract AIC and BIC values
+    
+    # SP500
+    criteria <- infocriteria(sp_egarch_fit_t)
+    sp_egarch_AIC_values_t[i, j] <- criteria[1]
+    sp_egarch_BIC_values_t[i, j] <- criteria[2]
+    
+    # DAX30
+    criteria <- infocriteria(dax_egarch_fit_t)
+    dax_egarch_AIC_values_t[i, j] <- criteria[1]
+    dax_egarch_BIC_values_t[i, j] <- criteria[2]
+    
+    # CAC40
+    criteria <- infocriteria(cac_egarch_fit_t)
+    cac_egarch_AIC_values_t[i, j] <- criteria[1]
+    cac_egarch_BIC_values_t[i, j] <- criteria[2]
+    
+    # N225
+    criteria <- infocriteria(n225_egarch_fit_t)
+    n225_egarch_AIC_values_t[i, j] <- criteria[1]
+    n225_egarch_BIC_values_t[i, j] <- criteria[2]
+    
+    # Print AIC and BIC values
+    cat("AIC for eGARCH(", p_values[i], ",", q_values[j], "): ", criteria[1], "\n")
+    cat("BIC for eGARCH(", p_values[i], ",", q_values[j], "): ", criteria[2], "\n\n")
+  }
+}
+# This code is kinda comprehensive as it needs to use numerical optimization
+# takes about 3-5 minutes to load depending on computer RAM, I've used a Macbook M1 RAM
+
+# Find the lag orders with the lowest AIC and BIC
+
+# SP500
+best_sp_lags_egarch_AIC_t <- which(sp_egarch_AIC_values_t == min(sp_egarch_AIC_values_t), arr.ind = TRUE)
+best_sp_lags_egarch_BIC_t <- which(sp_egarch_BIC_values_t == min(sp_egarch_BIC_values_t), arr.ind = TRUE)
+
+print(best_sp_lags_egarch_AIC_t)
+print(best_sp_lags_egarch_BIC_t)
+
+# DAX30
+best_dax_lags_egarch_AIC_t <- which(dax_egarch_AIC_values_t == min(dax_egarch_AIC_values_t), arr.ind = TRUE)
+best_dax_lags_egarch_BIC_t <- which(dax_egarch_BIC_values_t == min(dax_egarch_BIC_values_t), arr.ind = TRUE)
+
+print(best_dax_lags_egarch_AIC_t)
+print(best_dax_lags_egarch_BIC_t)
+
+# CAC40
+best_cac_lags_egarch_AIC_t <- which(cac_egarch_AIC_values_t == min(cac_egarch_AIC_values_t), arr.ind = TRUE)
+best_cac_lags_egarch_BIC_t <- which(cac_egarch_BIC_values_t == min(cac_egarch_BIC_values_t), arr.ind = TRUE)
+
+print(best_cac_lags_egarch_AIC_t)
+print(best_cac_lags_egarch_BIC_t)
+
+# N225
+best_n225_lags_egarch_AIC_t <- which(n225_egarch_AIC_values_t == min(n225_egarch_AIC_values_t), arr.ind = TRUE)
+best_n225_lags_egarch_BIC_t <- which(n225_egarch_BIC_values_t == min(n225_egarch_BIC_values_t), arr.ind = TRUE)
+
+print(best_n225_lags_egarch_AIC_t)
+print(best_n225_lags_egarch_BIC_t)
+
+# Model-selection for GARCH under t-distribution results:
+# SP500: EGARCH(3,3)
+# DAX30: EGARCH(4,3)
+# CAC40: EGARCH(4,3)
+# N225: EGARCH(4,3)
+
+# Further investigations
+print(sp_egarch_AIC_values_t)
+print(dax_egarch_AIC_values_t)
+print(cac_egarch_AIC_values_t)
+print(n225_egarch_AIC_values_t)
+
+print(sp_egarch_BIC_values_t)
+print(dax_egarch_BIC_values_t)
+print(cac_egarch_BIC_values_t)
+print(n225_egarch_BIC_values_t)
+
+# Overall lower AIC and BIC values again, than the sGARCH = better fit
+
+#######################################################
+### EGARCH(p,q) - Model Estimation (T-distribution) ###
+#######################################################
+
+# EGARCH specifications
+
+# SP500
+sp_egarch_spec_t <- ugarchspec(variance.model = list(model = "eGARCH",
+                                                     garchOrder = c(3, 3)),
+                               mean.model = list(armaOrder = c(0, 0)),
+                               distribution.model = "std")
+
+# DAX30
+dax_egarch_spec_t <- ugarchspec(variance.model = list(model = "eGARCH",
+                                                      garchOrder = c(4, 3)),
+                                mean.model = list(armaOrder = c(0, 0)),
+                                distribution.model = "std")
+
+# CAC40
+cac_egarch_spec_t <- ugarchspec(variance.model = list(model = "eGARCH",
+                                                      garchOrder = c(4, 3)),
+                                mean.model = list(armaOrder = c(0, 0)),
+                                distribution.model = "std")
+
+# N225
+n225_egarch_spec_t <- ugarchspec(variance.model = list(model = "eGARCH",
+                                                       garchOrder = c(3, 1)),
+                                 mean.model = list(armaOrder = c(0, 0)),
+                                 distribution.model = "std")
+
+# Fit GARCH Model, I can now interpret the EGARCH coefficients
+
+# SP500
+sp_egarch_fit_t <- ugarchfit(data = vX_sp, spec = sp_egarch_spec_t, solver = "solnp")
+sp_egarch_fit_t
+
+plot(sp_egarch_fit_t, which = 12)
+
+# DAX30
+dax_egarch_fit_t <- ugarchfit(data = vX_dax, spec = dax_egarch_spec_t)
+dax_egarch_fit_t
+
+plot(dax_egarch_fit_t, which = 12)
+
+# CAC40
+cac_egarch_fit_t <- ugarchfit(data = vX_cac, spec = cac_egarch_spec_t)
+cac_egarch_fit_t
+
+plot(cac_egarch_fit_t, which = 12)
+
+# N225
+n225_egarch_fit_t <- ugarchfit(data = vX_n225, spec = n225_egarch_spec_t)
+n225_egarch_fit_t
+
+plot(n225_egarch_fit_t, which = 12)
+
+########################################################
+### EGARCH(p,q) - Diagnostics check (T-distribution) ###
+########################################################
+
+# Extract the residuals for analysis 
+sp_res_egarch_t  <- residuals(sp_egarch_fit_t, standardize = TRUE)                 # SP500
+dax_res_egarch_t  <- residuals(dax_egarch_fit_t, standardize = TRUE)               # DAX30
+cac_res_egarch_t  <- residuals(cac_egarch_fit_t, standardize = TRUE)               # CAC40
+n225_res_egarch_t  <- residuals(n225_egarch_fit_t, standardize = TRUE)             # N225
+
+# Ljung-Box Portmenteau Test
+Box.test(sp_res_egarch_t, type = "Ljung-Box")                        # SP500
+Box.test(dax_res_egarch_t, type = "Ljung-Box")                       # DAX30
+Box.test(cac_res_egarch_t, type = "Ljung-Box")                       # CAC
+Box.test(n225_res_egarch_t, type = "Ljung-Box")                      # N225
+
+# Squared
+sp_res_egarch_t_sq  <- sp_res_egarch_t^2              # SP500
+dax_res_egarch_t_sq  <- dax_res_egarch_t^2            # DAX30
+cac_res_egarch_t_sq  <- cac_res_egarch_t^2            # CAC40
+n225_res_egarch_t_sq  <- n225_res_egarch_t^2          # N225
+
+# Ljung-Box Portmenteau Test
+Box.test(sp_res_egarch_t_sq, lag = 10,  type = "Ljung-Box")                        # SP500
+Box.test(dax_res_egarch_t_sq, lag = 10, type = "Ljung-Box")                       # DAX30
+Box.test(cac_res_egarch_t_sq, lag = 10, type = "Ljung-Box")                       # CAC
+Box.test(n225_res_egarch_t_sq, lag = 10, type = "Ljung-Box")                      # N225
+
+
+# For Ljung-Box Portmenteau test we cannot reject H0 of no autocorrelation on 5 % signficance level
+
+######################
+# Jarque Bera - Test #
+######################
+
+# Jarque-Bera test statistic
+sp_jarque_bera_test <- jarque.bera.test(sp_res_egarch_t)                           # SP500
+dax_jarque_bera_test <- jarque.bera.test(dax_res_egarch_t)                           # DAX30
+cac_jarque_bera_test <- jarque.bera.test(cac_res_egarch_t)                           # CAC40
+n225_jarque_bera_test <- jarque.bera.test(n225_res_egarch_t)                           # N225
+
+# Result
+sp_jarque_bera_test
+dax_jarque_bera_test 
+cac_jarque_bera_test 
+n225_jarque_bera_test
+
+# Even though no auto correlation is present, its residuals is not normally distributed..
+
+# Plot Fitted Residuals to see if it exhibits white noise
+plot(dates_sp[-1], sp_res_egarch_t, type = "l", col = "black",
+     xlab = "Date", ylab = "Fitted Residuals",
+     main = "SP500")
+
+plot(dates_dax[-1], dax_res_egarch_t, type = "l", col = "black",
+     xlab = "Date", ylab = "Fitted Residuals",
+     main = "DAX30")
+
+plot(dates_cac[-1], cac_res_egarch_t, type = "l", col = "black",
+     xlab = "Date", ylab = "Fitted Residuals",
+     main = "CAC40")
+
+plot(dates_n225[-1], n225_res_egarch_t, type = "l", col = "black",
+     xlab = "Date", ylab = "Fitted Residuals",
+     main = "N225")
+
+# Conditional variances (sigma extract the standard deviation)
+sp_e_cd_std <- sigma(sp_egarch_fit_t)            # Conditional std. for SP500
+dax_e_cd_std <- sigma(dax_egarch_fit_t)        # Conditional std. for DAX30
+cac_e_cd_std <- sigma(cac_egarch_fit_t)        # Conditional std. for CAC40
+n225_e_cd_std <- sigma(n225_egarch_fit_t)      # Conditional std. for N225
+
+sp_e_cd_var <- sigma(sp_egarch_fit_t)^2          # Conditional variance for SP500
+dax_e_cd_var <- sigma(dax_egarch_fit_t)^2        # Conditional variance for DAX30
+cac_e_cd_var <- sigma(cac_egarch_fit_t)^2        # Conditional variance for CAC40
+n225_e_cd_var <- sigma(n225_egarch_fit_t)^2      # Conditional variance for N225
+
+# Conditional Variance plots
+
+# SP500
+ylim <- range(absolute_returns_sp, sp_e_cd_std)
+plot(dates_sp[-1], absolute_returns_sp, type = "l", col = "grey",
+     xlab = "Date", ylab = "Conditional Std.",
+     main = "SP500", ylim = ylim)
+
+lines(dates_sp[-1], sp_e_cd_std, col = "steelblue", type = "l")
+
+grid(lty = 3, col = "grey")              # Add a grid for better readability
+
+legend("topright", legend = c("Absolute Returns", "Conditional Std."),
+       col = c("grey", "steelblue"), lwd = 2, lty = c(1, 2), inset = c(0, 0.0001),
+       text.font = 1)    
+
+# DAX30
+ylim <- range(absolute_returns_dax, dax_e_cd_std)
+plot(dates_dax[-1], absolute_returns_dax, type = "l", col = "grey",
+     xlab = "Date", ylab = "Conditional Std.",
+     main = "DAX30", ylim = ylim)
+
+lines(dates_dax[-1], dax_e_cd_std, col = "steelblue", type = "l")
+
+grid(lty = 3, col = "grey")              # Add a grid for better readability
+
+legend("topright", legend = c("Absolute Returns", "Conditional Std."),
+       col = c("grey", "steelblue"), lwd = 2, lty = c(1, 2), inset = c(0, 0.0001),
+       text.font = 1)        
+
+# CAC40
+ylim <- range(absolute_returns_cac, cac_e_cd_std)
+plot(dates_cac[-1], absolute_returns_cac, type = "l", col = "grey",
+     xlab = "Date", ylab = "Conditional Std.",
+     main = "CAC40", ylim = ylim)
+
+lines(dates_cac[-1], cac_e_cd_std, col = "steelblue", type = "l")
+
+grid(lty = 3, col = "grey")              # Add a grid for better readability
+
+legend("topright", legend = c("Absolute Returns", "Conditional Std."),
+       col = c("grey", "steelblue"), lwd = 2, lty = c(1, 2), inset = c(0, 0.0001),
+       text.font = 1)    
+
+# N225
+ylim <- range(absolute_returns_n225, n225_e_cd_std)
+plot(dates_n225[-1], absolute_returns_n225, type = "l", col = "grey",
+     xlab = "Date", ylab = "Conditional Std.",
+     main = "N225", ylim = ylim)
+
+lines(dates_n225[-1], n225_e_cd_std, col = "steelblue", type = "l")
+
+grid(lty = 3, col = "grey")              # Add a grid for better readability
+
+legend("topright", legend = c("Absolute Returns", "Conditional Std."),
+       col = c("grey", "steelblue"), lwd = 2, lty = c(1, 2), inset = c(0, 0.0001),
+       text.font = 1)    
+
+#########################################################
+### GJR-GARCH(p,q) - Model Selection (T-distribution) ###
+#########################################################
+
+# Specify the lag orders to compare
+p_values <- 1:5
+q_values <- 1:5
+
+# Initialize empty matrices to store AIC/BIC values
+
+# SP500
+sp_gjrgarch_AIC_values_t <-  matrix(NA, nrow = length(p_values), ncol = length(q_values))
+sp_gjrgarch_BIC_values_t <- matrix(NA, nrow = length(p_values), ncol = length(q_values))
+
+# DAX30
+dax_gjrgarch_AIC_values_t <-  matrix(NA, nrow = length(p_values), ncol = length(q_values))
+dax_gjrgarch_BIC_values_t <- matrix(NA, nrow = length(p_values), ncol = length(q_values))
+
+# CAC
+cac_gjrgarch_AIC_values_t <-  matrix(NA, nrow = length(p_values), ncol = length(q_values))
+cac_gjrgarch_BIC_values_t <- matrix(NA, nrow = length(p_values), ncol = length(q_values))
+
+# N225
+n225_gjrgarch_AIC_values_t <-  matrix(NA, nrow = length(p_values), ncol = length(q_values))
+n225_gjrgarch_BIC_values_t <- matrix(NA, nrow = length(p_values), ncol = length(q_values))
+
+
+# Fit and compare each model
+for (i in 1:length(p_values)) {
+  for (j in 1:length(q_values)) {
+    # Specify the GJR-GARCH(p,q) model
+    
+    # SP500
+    sp_gjrgarch_spec_t <- ugarchspec(variance.model = list(model = "gjrGARCH", garchOrder = c(p_values[i], q_values[j])),
+                                     mean.model = list(armaOrder = c(0, 0)),
+                                     distribution.model = "std")
+    
+    # DAX30
+    dax_gjrgarch_spec_t <- ugarchspec(variance.model = list(model = "gjrGARCH", garchOrder = c(p_values[i], q_values[j])),
+                                      mean.model = list(armaOrder = c(0, 0)),
+                                      distribution.model = "std")
+    
+    # CAC40
+    cac_gjrgarch_spec_t <- ugarchspec(variance.model = list(model = "gjrGARCH", garchOrder = c(p_values[i], q_values[j])),
+                                      mean.model = list(armaOrder = c(0, 0)),
+                                      distribution.model = "std")
+    
+    # N225
+    n225_gjrgarch_spec_t <- ugarchspec(variance.model = list(model = "gjrGARCH", garchOrder = c(p_values[i], q_values[j])),
+                                       mean.model = list(armaOrder = c(0, 0)),
+                                       distribution.model = "std")
+    
+    # Fit GJR-GARCH Models
+    
+    # SP500
+    sp_gjrgarch_fit_t <- ugarchfit(data = vX_sp, spec = sp_gjrgarch_spec_t)
+    
+    # DAX30
+    dax_gjrgarch_fit_t <- ugarchfit(spec = dax_gjrgarch_spec_t, data = vX_dax, solver = c('hybrid'))
+    
+    # CAC40
+    cac_gjrgarch_fit_t <- ugarchfit(cac_gjrgarch_spec_t, data = vX_cac, solver = c('hybrid'))
+    
+    # N225
+    n225_gjrgarch_fit_t <- ugarchfit(spec = n225_gjrgarch_spec_t, data = vX_n225, solver = c('hybrid'))
+    
+    # Extract AIC and BIC values
+    
+    # SP500
+    criteria <- infocriteria(sp_gjrgarch_fit_t)
+    sp_gjrgarch_AIC_values_t[i, j] <- criteria[1]
+    sp_gjrgarch_BIC_values_t[i, j] <- criteria[2]
+    
+    # DAX30
+    criteria <- infocriteria(dax_gjrgarch_fit_t)
+    dax_gjrgarch_AIC_values_t[i, j] <- criteria[1]
+    dax_gjrgarch_BIC_values_t[i, j] <- criteria[2]
+    
+    # CAC40
+    criteria <- infocriteria(cac_gjrgarch_fit_t)
+    cac_gjrgarch_AIC_values_t[i, j] <- criteria[1]
+    cac_gjrgarch_BIC_values_t[i, j] <- criteria[2]
+    
+    # N225
+    criteria <- infocriteria(n225_gjrgarch_fit_t)
+    n225_gjrgarch_AIC_values_t[i, j] <- criteria[1]
+    n225_gjrgarch_BIC_values_t[i, j] <- criteria[2]
+    
+    # Print AIC and BIC values
+    cat("AIC for gjrGARCH(", p_values[i], ",", q_values[j], "): ", criteria[1], "\n")
+    cat("BIC for gjrGARCH(", p_values[i], ",", q_values[j], "): ", criteria[2], "\n\n")
+  }
+}
+# This code is also comprehensive as it needs to use numerical optimization
+# takes about 3-5 minutes to load depending on computer RAM, I've used a Macbook M1 RAM
+
+# Find the lag orders with the lowest AIC and BIC
+
+# SP500
+best_sp_lags_gjrgarch_AIC_t <- which(sp_gjrgarch_AIC_values_t == min(sp_gjrgarch_AIC_values_t), arr.ind = TRUE)
+best_sp_lags_gjrgarch_BIC_t <- which(sp_gjrgarch_BIC_values_t == min(sp_gjrgarch_BIC_values_t), arr.ind = TRUE)
+
+print(best_sp_lags_gjrgarch_AIC_t)
+print(best_sp_lags_gjrgarch_BIC_t)
+
+# DAX30
+best_dax_lags_gjrgarch_AIC_t <- which(dax_gjrgarch_AIC_values_t == min(dax_gjrgarch_AIC_values_t), arr.ind = TRUE)
+best_dax_lags_gjrgarch_BIC_t <- which(dax_gjrgarch_BIC_values_t == min(dax_gjrgarch_BIC_values_t), arr.ind = TRUE)
+
+print(best_dax_lags_gjrgarch_AIC_t)
+print(best_dax_lags_gjrgarch_BIC_t)
+
+# CAC40
+best_cac_lags_gjrgarch_AIC_t <- which(cac_gjrgarch_AIC_values_t == min(cac_gjrgarch_AIC_values_t), arr.ind = TRUE)
+best_cac_lags_gjrgarch_BIC_t <- which(cac_gjrgarch_BIC_values_t == min(cac_gjrgarch_BIC_values_t), arr.ind = TRUE)
+
+print(best_cac_lags_gjrgarch_AIC_t)
+print(best_cac_lags_gjrgarch_BIC_t)
+
+# N225
+best_n225_lags_gjrgarch_AIC_t <- which(n225_gjrgarch_AIC_values_t == min(n225_gjrgarch_AIC_values_t), arr.ind = TRUE)
+best_n225_lags_gjrgarch_BIC_t <- which(n225_gjrgarch_BIC_values_t == min(n225_gjrgarch_BIC_values_t), arr.ind = TRUE)
+
+print(best_n225_lags_gjrgarch_AIC_t)
+print(best_n225_lags_gjrgarch_BIC_t)
+
+# Model-selection for GJR-GARCH under t-distribution results:
+# SP500: GJR-GARCH(3,1)
+# DAX30: GJR-GARCH(4,1)
+# CAC40: GJR-GARCH(1,1)
+# N225: GJR-GARCH(3,1)
+
+# Further investigations
+print(sp_gjrgarch_AIC_values_t)
+print(dax_gjrgarch_AIC_values_t)
+print(cac_gjrgarch_AIC_values_t)
+print(n225_gjrgarch_AIC_values_t)
+
+print(sp_gjrgarch_BIC_values_t)
+print(dax_gjrgarch_BIC_values_t)
+print(cac_gjrgarch_BIC_values_t)
+print(n225_gjrgarch_BIC_values_t)
+
+# This time i dont achieve a better score of AIC and BIC values
+
+#######################################################
+### GJR-GARCH(p,q) - Model Estimation (T-distribution) ###
+#######################################################
+
+# GJR-GARCH specifications
+
+# SP500
+sp_gjrgarch_spec_t <- ugarchspec(variance.model = list(model = "gjrGARCH",
+                                                       garchOrder = c(3, 1)),
+                                 mean.model = list(armaOrder = c(0, 0)),
+                                 distribution.model = "std")
+
+# DAX30
+dax_gjrgarch_spec_t <- ugarchspec(variance.model = list(model = "gjrGARCH",
+                                                        garchOrder = c(4, 1)),
+                                  mean.model = list(armaOrder = c(0, 0)),
+                                  distribution.model = "std")
+
+# CAC40
+cac_gjrgarch_spec_t <- ugarchspec(variance.model = list(model = "gjrGARCH",
+                                                        garchOrder = c(1, 3)),
+                                  mean.model = list(armaOrder = c(0, 0)),
+                                  distribution.model = "std")
+
+# N225
+n225_gjrgarch_spec_t <- ugarchspec(variance.model = list(model = "gjrGARCH",
+                                                         garchOrder = c(3, 1)),
+                                   mean.model = list(armaOrder = c(0, 0)),
+                                   distribution.model = "std")
+
+# Fit GJR-GARCH Model, I can now interpret the GJR-GARCH coefficients
+
+# SP500
+sp_gjrgarch_fit_t <- ugarchfit(data = vX_sp, spec = sp_gjrgarch_spec_t)
+sp_gjrgarch_fit_t
+
+plot(sp_gjrgarch_fit_t, which = 12)
+
+# DAX30
+dax_gjrgarch_fit_t <- ugarchfit(data = vX_dax, spec = dax_gjrgarch_spec_t)
+dax_gjrgarch_fit_t
+
+plot(dax_gjrgarch_fit_t, which = 12)
+
+# CAC40
+cac_gjrgarch_fit_t <- ugarchfit(data = vX_cac, spec = cac_gjrgarch_spec_t)
+cac_gjrgarch_fit_t
+
+plot(cac_gjrgarch_fit_t, which = 12)
+
+# N225
+n225_gjrgarch_fit_t <- ugarchfit(data = vX_n225, spec = n225_gjrgarch_spec_t)
+n225_gjrgarch_fit_t
+
+plot(n225_gjrgarch_fit_t, which = 12)
+
+###########################################################
+### GJR-GARCH(p,q) - Diagnostics check (T-distribution) ###
+###########################################################
+
+# Extract the residuals for analysis (GJRGARCH standardize residuals)
+sp_res_gjrgarch_t  <- residuals(sp_gjrgarch_fit_t, standardize = TRUE)                 # SP500
+dax_res_gjrgarch_t  <- residuals(dax_gjrgarch_fit_t, standardize = TRUE)               # DAX30
+cac_res_gjrgarch_t  <- residuals(cac_gjrgarch_fit_t, standardize = TRUE)               # CAC40
+n225_res_gjrgarch_t  <- residuals(n225_gjrgarch_fit_t, standardize = TRUE)             # N225
+
+# Ljung-Box Portmenteau Test
+Box.test(sp_res_gjrgarch_t, type = "Ljung-Box")                        # SP500
+Box.test(dax_res_gjrgarch_t, type = "Ljung-Box")                       # DAX30
+Box.test(cac_res_gjrgarch_t, type = "Ljung-Box")                       # CAC
+Box.test(n225_res_gjrgarch_t, type = "Ljung-Box")                      # N225
+
+# For Ljung-Box Portmenteau test we cannot reject H0 of no autocorrelation on 5 % signficance level
+
+######################
+# Jarque Bera - Test #
+######################
+
+# Jarque-Bera test statistic
+sp_jarque_bera_test <- jarque.bera.test(sp_res_gjrgarch_t)                           # SP500
+dax_jarque_bera_test <- jarque.bera.test(dax_res_gjrgarch_t)                           # DAX30
+cac_jarque_bera_test <- jarque.bera.test(cac_res_gjrgarch_t)                           # CAC40
+n225_jarque_bera_test <- jarque.bera.test(n225_res_gjrgarch_t)                           # N225
+
+# Result
+sp_jarque_bera_test
+dax_jarque_bera_test 
+cac_jarque_bera_test 
+n225_jarque_bera_test
+
+# Even though no auto correlation is present, its residuals is not normally distributed either..
+
+# Plot Fitted Residuals to see if it exhibits white noise
+plot(dates_sp[-1], sp_res_gjrgarch_t, type = "l", col = "black",
+     xlab = "Date", ylab = "Fitted Residuals",
+     main = "SP500")
+
+plot(dates_dax[-1], dax_res_gjrgarch_t, type = "l", col = "black",
+     xlab = "Date", ylab = "Fitted Residuals",
+     main = "DAX30")
+
+plot(dates_cac[-1], cac_res_gjrgarch_t, type = "l", col = "black",
+     xlab = "Date", ylab = "Fitted Residuals",
+     main = "CAC40")
+
+plot(dates_n225[-1], n225_res_gjrgarch_t, type = "l", col = "black",
+     xlab = "Date", ylab = "Fitted Residuals",
+     main = "N225")
+
+# Conditional variances (sigma extract the standard deviation)
+sp_gjr_cd_var <- sigma(sp_gjrgarch_fit_t)^2        # Conditional variance for SP500
+dax_gjr_cd_var <- sigma(dax_gjrgarch_fit_t)^2        # Conditional variance for DAX30
+cac_gjr_cd_var <- sigma(cac_gjrgarch_fit_t)^2        # Conditional variance for CAC40
+n225_gjr_cd_var <- sigma(n225_gjrgarch_fit_t)^2      # Conditional variance for N225
+
+# Conditional standard deviation (sigma extract the standard deviation)
+sp_gjr_cd_std <- sigma(sp_gjrgarch_fit_t)          # Conditional variance for SP500
+dax_gjr_cd_std <- sigma(dax_gjrgarch_fit_t)        # Conditional variance for DAX30
+cac_gjr_cd_std <- sigma(cac_gjrgarch_fit_t)        # Conditional variance for CAC40
+n225_gjr_cd_std <- sigma(n225_gjrgarch_fit_t)      # Conditional variance for N225
+
+
+# Conditional Variance plots
+
+# SP500
+ylim <- range(absolute_returns_sp, sp_gjr_cd_std)
+plot(dates_sp[-1], absolute_returns_sp, type = "l", col = "grey",
+     xlab = "Date", ylab = "Conditional Std.",
+     main = "SP500", ylim = ylim)
+
+lines(dates_sp[-1], sp_gjr_cd_std, col = "steelblue", type = "l")
+
+grid(lty = 3, col = "grey")              # Add a grid for better readability
+
+legend("topright", legend = c("Absolute Returns", "Conditional Std."),
+       col = c("grey", "steelblue"), lwd = 2, lty = c(1, 2), inset = c(0, 0.0001),
+       text.font = 1)    
+
+# DAX30
+ylim <- range(absolute_returns_dax, dax_gjr_cd_std)
+plot(dates_dax[-1], absolute_returns_dax, type = "l", col = "grey",
+     xlab = "Date", ylab = "Conditional Std.",
+     main = "DAX30", ylim = ylim)
+
+lines(dates_dax[-1], dax_gjr_cd_std, col = "steelblue", type = "l")
+
+grid(lty = 3, col = "grey")              # Add a grid for better readability
+
+legend("topright", legend = c("Absolute Returns", "Conditional Std."),
+       col = c("grey", "steelblue"), lwd = 2, lty = c(1, 2), inset = c(0, 0.0001),
+       text.font = 1)        
+
+# CAC40
+ylim <- range(absolute_returns_cac, cac_gjr_cd_std)
+plot(dates_cac[-1], absolute_returns_cac, type = "l", col = "grey",
+     xlab = "Date", ylab = "Conditional Std.",
+     main = "CAC40", ylim = ylim)
+
+lines(dates_cac[-1], cac_gjr_cd_std, col = "steelblue", type = "l")
+
+grid(lty = 3, col = "grey")              # Add a grid for better readability
+
+legend("topright", legend = c("Absolute Returns", "Conditional Std."),
+       col = c("grey", "steelblue"), lwd = 2, lty = c(1, 2), inset = c(0, 0.0001),
+       text.font = 1)    
+
+# N225
+ylim <- range(absolute_returns_n225, n225_gjr_cd_std)
+plot(dates_n225[-1], absolute_returns_n225, type = "l", col = "grey",
+     xlab = "Date", ylab = "Conditional Std.",
+     main = "N225", ylim = ylim)
+
+lines(dates_n225[-1], n225_gjr_cd_std, col = "steelblue", type = "l")
+
+grid(lty = 3, col = "grey")              # Add a grid for better readability
+
+legend("topright", legend = c("Absolute Returns", "Conditional Std."),
+       col = c("grey", "steelblue"), lwd = 2, lty = c(1, 2), inset = c(0, 0.0001),
+       text.font = 1)    
+
+##################################
+### Leverage Effect - Visually ###
+##################################
+
+
+# SP500
+par(mfrow=c(1,1)) # Two-plot
+
+# Set threshold for high volatility
+volatility_threshold <- 4  # You can adjust this threshold as needed
+
+# Initialize vector to store high volatility periods
+high_volatility_periods <- c()
+
+# Loop through the volatility values to identify periods exceeding the threshold
+for (i in 1:length(vX_sp)) {
+  if (abs(vX_sp[i]) > volatility_threshold) {
+    high_volatility_periods <- c(high_volatility_periods, i)
+  }
+}
+
+# Plot adjusted closing prices
+plot(index(sp500), 
+     adj.sp500, 
+     type = "l", 
+     col = "black",
+     xlab = "Date", 
+     ylab = "Adjusted Closing Prices",
+     main = "S&P500")
+
+# Add grey rectangles for high volatility periods
+for (i in high_volatility_periods) {
+  rect(index(sp500)[i-1], par("usr")[3], index(sp500)[i], par("usr")[4], col = "grey", border = NA)
+}
+
+
+plot(dates_sp[-1], vX_sp, type = "l", col = "black",
+     xlab = "Date", ylab = "Daily Returns",
+     main = "S&P500")
+
+
+# Add grey rectangles for high volatility periods
+for (i in high_volatility_periods) {
+  rect(index(sp500)[i-1], par("usr")[3], index(sp500)[i], par("usr")[4], col = "grey", border = NA)
+}
+
+
+
+# DAX30
+par(mfrow=c(1,1)) # Two-plot
+
+# Set threshold for high volatility
+volatility_threshold <- 4  # You can adjust this threshold as needed
+
+# Initialize vector to store high volatility periods
+high_volatility_periods <- c()
+
+# Loop through the volatility values to identify periods exceeding the threshold
+for (i in 1:length(vX_dax)) {
+  if (abs(vX_dax[i]) > volatility_threshold) {
+    high_volatility_periods <- c(high_volatility_periods, i)
+  }
+}
+
+# Plot adjusted closing prices
+plot(index(dax30), 
+     adj.dax30, 
+     type = "l", 
+     col = "black",
+     xlab = "Date", 
+     ylab = "Adjusted Closing Prices",
+     main = "DAX30")
+
+# Add grey rectangles for high volatility periods
+for (i in high_volatility_periods) {
+  rect(index(dax30)[i-1], par("usr")[3], index(dax30)[i], par("usr")[4], col = "grey", border = NA)
+}
+
+
+plot(dates_dax[-1], vX_dax, type = "l", col = "black",
+     xlab = "Date", ylab = "Daily Returns",
+     main = "DAX30")
+
+
+# Add grey rectangles for high volatility periods
+for (i in high_volatility_periods) {
+  rect(index(dax30)[i-1], par("usr")[3], index(dax30)[i], par("usr")[4], col = "grey", border = NA)
+}
+
+
+# CAC40
+par(mfrow=c(1,1)) # Two-plot
+
+# Set threshold for high volatility
+volatility_threshold <- 4  # You can adjust this threshold as needed
+
+# Initialize vector to store high volatility periods
+high_volatility_periods <- c()
+
+# Loop through the volatility values to identify periods exceeding the threshold
+for (i in 1:length(vX_cac)) {
+  if (abs(vX_cac[i]) > volatility_threshold) {
+    high_volatility_periods <- c(high_volatility_periods, i)
+  }
+}
+
+# Plot adjusted closing prices
+plot(index(cac40), 
+     adj.cac40, 
+     type = "l", 
+     col = "black",
+     xlab = "Date", 
+     ylab = "Adjusted Closing Prices",
+     main = "CAC40")
+
+# Add grey rectangles for high volatility periods
+for (i in high_volatility_periods) {
+  rect(index(cac40)[i-1], par("usr")[3], index(cac40)[i], par("usr")[4], col = "grey", border = NA)
+}
+
+
+plot(dates_cac[-1], vX_cac, type = "l", col = "black",
+     xlab = "Date", ylab = "Daily Returns",
+     main = "CAC40")
+
+
+# Add grey rectangles for high volatility periods
+for (i in high_volatility_periods) {
+  rect(index(cac40)[i-1], par("usr")[3], index(cac40)[i], par("usr")[4], col = "grey", border = NA)
+}
+
+
+# N225
+par(mfrow=c(1,1)) # Two-plot
+
+# Set threshold for high volatility
+volatility_threshold <- 4  # You can adjust this threshold as needed
+
+# Initialize vector to store high volatility periods
+high_volatility_periods <- c()
+
+# Loop through the volatility values to identify periods exceeding the threshold
+for (i in 1:length(vX_n225)) {
+  if (abs(vX_n225[i]) > volatility_threshold) {
+    high_volatility_periods <- c(high_volatility_periods, i)
+  }
+}
+
+# Plot adjusted closing prices
+plot(index(n225), 
+     adj.n225, 
+     type = "l", 
+     col = "black",
+     xlab = "Date", 
+     ylab = "Adjusted Closing Prices",
+     main = "N225")
+
+# Add grey rectangles for high volatility periods
+for (i in high_volatility_periods) {
+  rect(index(n225)[i-1], par("usr")[3], index(n225)[i], par("usr")[4], col = "grey", border = NA)
+}
+
+
+
+plot(dates_n225[-1], vX_n225, type = "l", col = "black",
+     xlab = "Date", ylab = "Daily Returns",
+     main = "N225")
+
+
+# Add grey rectangles for high volatility periods
+for (i in high_volatility_periods) {
+  rect(index(n225)[i-1], par("usr")[3], index(n225)[i], par("usr")[4], col = "grey", border = NA)
+}
